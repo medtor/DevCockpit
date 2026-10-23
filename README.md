@@ -16,21 +16,21 @@
 ### 🖥️ Tableau de Bord Principal (Cockpit Développeur)
 Vue unifiée affichant vos métriques en temps réel, l'état de vos clés d'API, vos raccourcis favoris et vos actions récentes.
 
-![Tableau de Bord DevCockpit](./docs/screenshots/dashboard.svg)
+![Tableau de Bord DevCockpit](./docs/screenshots/dashboard.png)
 
 ---
 
 ### 🛠️ Boîte à Outils Développeur Hors-Ligne (JSON, JWT, Hash, Base64...)
 Interface avec filtrage de recherche instantané, éditeur double-volet avec coloration syntaxique, validation en direct et confirmation de copie par notification toast.
 
-![Boîte à Outils Développeur DevCockpit](./docs/screenshots/toolbox.svg)
+![Boîte à Outils Développeur DevCockpit](./docs/screenshots/toolbox.png)
 
 ---
 
 ### 🔐 Coffre-fort de Secrets & Gestionnaire de Clés d'API
 Sécurisation de vos jetons (OpenAI, Claude, Gemini, GitHub...) chiffrés localement via AES-GCM 256 bits avec masquage automatique et test de santé en un clic.
 
-![Coffre-fort de Clés et Secrets DevCockpit](./docs/screenshots/vault.svg)
+![Coffre-fort de Clés et Secrets DevCockpit](./docs/screenshots/vault.png)
 
 ---
 
