@@ -16,21 +16,27 @@
 ### 🖥️ Tableau de Bord Principal (Cockpit Développeur)
 Vue unifiée affichant vos métriques en temps réel, l'état de vos clés d'API, vos raccourcis favoris et vos actions récentes.
 
-![Tableau de Bord DevCockpit](./docs/screenshots/dashboard.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/medtor/DevCockpit/main/docs/screenshots/dashboard.png" alt="Tableau de Bord DevCockpit" width="100%" />
+</p>
 
 ---
 
 ### 🛠️ Boîte à Outils Développeur Hors-Ligne (JSON, JWT, Hash, Base64...)
 Interface avec filtrage de recherche instantané, éditeur double-volet avec coloration syntaxique, validation en direct et confirmation de copie par notification toast.
 
-![Boîte à Outils Développeur DevCockpit](./docs/screenshots/toolbox.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/medtor/DevCockpit/main/docs/screenshots/toolbox.png" alt="Boîte à Outils Développeur DevCockpit" width="100%" />
+</p>
 
 ---
 
 ### 🔐 Coffre-fort de Secrets & Gestionnaire de Clés d'API
 Sécurisation de vos jetons (OpenAI, Claude, Gemini, GitHub...) chiffrés localement via AES-GCM 256 bits avec masquage automatique et test de santé en un clic.
 
-![Coffre-fort de Clés et Secrets DevCockpit](./docs/screenshots/vault.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/medtor/DevCockpit/main/docs/screenshots/vault.png" alt="Coffre-fort de Clés et Secrets DevCockpit" width="100%" />
+</p>
 
 ---
 
