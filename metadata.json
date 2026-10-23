@@ -1,0 +1,6 @@
+{
+  "name": "DevDesk",
+  "description": "Desktop-ready Developer & Personal Utility Dashboard with Local-First encrypted vault, API key tester, MCP manager, Prompt engineer studio, Dev toolbox, and offline storage.",
+  "requestFramePermissions": ["clipboard-read", "clipboard-write"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

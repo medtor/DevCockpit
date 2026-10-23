@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DevDesk - Developer & Personal Utility Dashboard</title>
+    <meta name="description" content="Local-first developer utility dashboard with encrypted password vault, API key tester, MCP server manager, prompt studio, and offline toolbox." />
+    <meta property="og:title" content="DevDesk - Developer & Personal Utility Dashboard" />
+    <meta property="og:description" content="Local-first developer utility dashboard with encrypted password vault, API key tester, MCP server manager, prompt studio, and offline toolbox." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      (function() {
+        // 0. Synchronize initial theme before DOM render to prevent flash
+        try {
+          var savedTheme = localStorage.getItem('devdesk_theme');
+          if (savedTheme === 'light') {
+            document.documentElement.classList.remove('dark');
+          } else {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {}
+
+        // 1. Ensure window.fetch is assignable for third-party extensions that hook fetch
+        try {
+          var currentFetch = window.fetch ? window.fetch.bind(window) : undefined;
+          var proto = Object.getPrototypeOf(window) || window;
+          var desc = Object.getOwnPropertyDescriptor(window, 'fetch') || Object.getOwnPropertyDescriptor(proto, 'fetch');
+          if (desc && (!desc.writable || !desc.set)) {
+            Object.defineProperty(window, 'fetch', {
+              configurable: true,
+              enumerable: true,
+              get: function() { return currentFetch; },
+              set: function(fn) { currentFetch = fn; }
+            });
+          }
+        } catch (e) {}
+
+        // 2. Prevent unhandled third-party browser extension errors from bubbling
+        function isExtensionNoise(err) {
+          if (!err) return false;
+          var text = (err.filename || '') + ' ' + (err.message || '') + ' ' + (err.stack || '') + ' ' + String(err);
+          return (
+            text.indexOf('chrome-extension://') !== -1 ||
+            text.indexOf('moz-extension://') !== -1 ||
+            text.indexOf('safari-extension://') !== -1 ||
+            text.indexOf('Talisman extension') !== -1 ||
+            text.indexOf('Cannot set property fetch of #<Window>') !== -1
+          );
+        }
+
+        window.addEventListener('error', function(event) {
+          if (isExtensionNoise(event) || isExtensionNoise(event.error)) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            return true;
+          }
+        }, true);
+
+        window.addEventListener('unhandledrejection', function(event) {
+          if (isExtensionNoise(event.reason)) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            return true;
+          }
+        }, true);
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 antialiased selection:bg-indigo-500/30 selection:text-indigo-200 min-h-screen">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
