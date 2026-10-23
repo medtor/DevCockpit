@@ -1,0 +1,424 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradients -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#090D16"/>
+      <stop offset="50%" stop-color="#0B0F19"/>
+      <stop offset="100%" stop-color="#070A10"/>
+    </linearGradient>
+    <linearGradient id="primary-glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="card-hero" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#18181B"/>
+      <stop offset="60%" stop-color="#18181B"/>
+      <stop offset="100%" stop-color="#1E1B4B" stop-opacity="0.6"/>
+    </linearGradient>
+    <linearGradient id="card-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#18181B"/>
+      <stop offset="100%" stop-color="#121215"/>
+    </linearGradient>
+    <linearGradient id="accent-emerald" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#10B981"/>
+    </linearGradient>
+    <linearGradient id="accent-cyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284C7"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+    <linearGradient id="accent-amber" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D97706"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+    
+    <!-- Filter for soft drop shadow -->
+    <filter id="shadow-window" x="-5%" y="-5%" width="110%" height="110%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="12" stdDeviation="24" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+    <filter id="glow-badge" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <style>
+    .font-sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  </style>
+
+  <!-- Canvas Background -->
+  <rect width="1280" height="720" fill="url(#bg-grad)" />
+
+  <!-- Outer Window Frame -->
+  <g filter="url(#shadow-window)">
+    <rect x="20" y="16" width="1240" height="688" rx="14" fill="#09090B" stroke="#27272A" stroke-width="1"/>
+
+    <!-- Window Top Header Bar -->
+    <rect x="20" y="16" width="1240" height="42" rx="14" fill="#121215"/>
+    <rect x="20" y="44" width="1240" height="14" fill="#121215"/>
+    <line x1="20" y1="58" x2="1260" y2="58" stroke="#27272A" stroke-width="1"/>
+
+    <!-- Window Controls (macOS style) -->
+    <circle cx="44" cy="37" r="6" fill="#EF4444" opacity="0.9"/>
+    <circle cx="64" cy="37" r="6" fill="#F59E0B" opacity="0.9"/>
+    <circle cx="84" cy="37" r="6" fill="#10B981" opacity="0.9"/>
+
+    <!-- App Title in Window Bar -->
+    <text x="640" y="41" fill="#71717A" font-size="12" font-weight="500" text-anchor="middle" class="font-sans">DevCockpit — Tableau de Bord Développeur &amp; Ingénierie IA (Local-First)</text>
+  </g>
+
+  <!-- ==================== LEFT SIDEBAR ==================== -->
+  <g id="sidebar">
+    <rect x="20" y="58" width="240" height="646" fill="#0F0F12" stroke="#27272A" stroke-width="1"/>
+    
+    <!-- Brand / Logo -->
+    <g transform="translate(40, 80)">
+      <!-- Rocket / Logo Icon Badge -->
+      <rect x="0" y="0" width="34" height="34" rx="8" fill="url(#primary-glow)"/>
+      <path d="M17 7 L21 13 L27 15 L22 19 L23 25 L17 22 L11 25 L12 19 L7 15 L13 13 Z" fill="#FFFFFF" transform="scale(0.8) translate(4.5, 4.5)"/>
+      
+      <text x="44" y="22" fill="#FFFFFF" font-size="16" font-weight="700" letter-spacing="-0.02em" class="font-sans">DevCockpit</text>
+      <rect x="142" y="10" width="42" height="16" rx="4" fill="#4F46E5" fill-opacity="0.2" stroke="#6366F1" stroke-width="0.8"/>
+      <text x="163" y="21.5" fill="#A5B4FC" font-size="9" font-weight="700" text-anchor="middle" class="font-sans">LOCAL</text>
+    </g>
+
+    <!-- Navigation Section: Principal -->
+    <text x="40" y="145" fill="#52525B" font-size="10" font-weight="700" letter-spacing="0.08em" class="font-sans">PRINCIPAL</text>
+
+    <!-- Active Item: Dashboard -->
+    <g transform="translate(32, 156)">
+      <rect x="0" y="0" width="216" height="36" rx="8" fill="#1E1B4B" stroke="#4F46E5" stroke-opacity="0.4" stroke-width="1"/>
+      <rect x="2" y="8" width="4" height="20" rx="2" fill="#6366F1"/>
+      <!-- Dashboard icon -->
+      <path d="M18 10 H28 V18 H18 Z M32 10 H42 V14 H32 Z M18 22 H28 V26 H18 Z M32 18 H42 V26 H32 Z" fill="#818CF8"/>
+      <text x="48" y="23" fill="#FFFFFF" font-size="13" font-weight="600" class="font-sans">Tableau de Bord</text>
+    </g>
+
+    <!-- Nav Item: Clés d'API -->
+    <g transform="translate(32, 198)">
+      <rect x="0" y="0" width="216" height="34" rx="8" fill="transparent"/>
+      <circle cx="26" cy="17" r="5" stroke="#71717A" stroke-width="1.8" fill="none"/>
+      <path d="M29 17 L36 17 M33 17 L33 21 M36 17 L36 20" stroke="#71717A" stroke-width="1.8"/>
+      <text x="48" y="22" fill="#A1A1AA" font-size="13" font-weight="500" class="font-sans">Clés d'API &amp; Cloud</text>
+      <rect x="184" y="8" width="22" height="18" rx="9" fill="#27272A"/>
+      <text x="195" y="21" fill="#D4D4D8" font-size="10" font-weight="600" text-anchor="middle" class="font-sans">6</text>
+    </g>
+
+    <!-- Nav Item: Coffre-fort -->
+    <g transform="translate(32, 238)">
+      <rect x="0" y="0" width="216" height="34" rx="8" fill="transparent"/>
+      <rect x="20" y="14" width="14" height="10" rx="2" stroke="#71717A" stroke-width="1.8" fill="none"/>
+      <path d="M23 14 V10 A4 4 0 0 1 31 10 V14" stroke="#71717A" stroke-width="1.8" fill="none"/>
+      <text x="48" y="22" fill="#A1A1AA" font-size="13" font-weight="500" class="font-sans">Coffre-fort Secrets</text>
+      <circle cx="195" cy="17" r="4" fill="#10B981"/>
+    </g>
+
+    <!-- Nav Item: Studio Prompts -->
+    <g transform="translate(32, 278)">
+      <rect x="0" y="0" width="216" height="34" rx="8" fill="transparent"/>
+      <path d="M24 10 L26 15 L31 17 L26 19 L24 24 L22 19 L17 17 L22 15 Z" fill="#71717A"/>
+      <text x="48" y="22" fill="#A1A1AA" font-size="13" font-weight="500" class="font-sans">Studio Prompts</text>
+      <rect x="184" y="8" width="22" height="18" rx="9" fill="#27272A"/>
+      <text x="195" y="21" fill="#D4D4D8" font-size="10" font-weight="600" text-anchor="middle" class="font-sans">14</text>
+    </g>
+
+    <!-- Nav Item: Serveurs MCP -->
+    <g transform="translate(32, 318)">
+      <rect x="0" y="0" width="216" height="34" rx="8" fill="transparent"/>
+      <path d="M20 12 L25 17 L20 22 M27 22 H34" stroke="#71717A" stroke-width="1.8" stroke-linecap="round"/>
+      <text x="48" y="22" fill="#A1A1AA" font-size="13" font-weight="500" class="font-sans">Serveurs MCP</text>
+      <rect x="184" y="8" width="22" height="18" rx="9" fill="#27272A"/>
+      <text x="195" y="21" fill="#D4D4D8" font-size="10" font-weight="600" text-anchor="middle" class="font-sans">4</text>
+    </g>
+
+    <!-- Navigation Section: OUTILS -->
+    <text x="40" y="380" fill="#52525B" font-size="10" font-weight="700" letter-spacing="0.08em" class="font-sans">BOÎTE À OUTILS HORS-LIGNE</text>
+
+    <!-- Nav Item: Toolbox -->
+    <g transform="translate(32, 392)">
+      <rect x="0" y="0" width="216" height="34" rx="8" fill="transparent"/>
+      <path d="M20 15 L24 11 A3 3 0 0 1 28 15 L23 20 Z M28 15 L32 19 M22 21 L18 25" stroke="#71717A" stroke-width="1.8" stroke-linecap="round"/>
+      <text x="48" y="22" fill="#A1A1AA" font-size="13" font-weight="500" class="font-sans">Outils Développeur</text>
+      <path d="M192 15 L196 19 L200 15" stroke="#71717A" stroke-width="1.8" fill="none"/>
+    </g>
+
+    <!-- Toolbox Sub-items Preview -->
+    <g transform="translate(56, 432)" opacity="0.85">
+      <circle cx="6" cy="10" r="2" fill="#6366F1"/>
+      <text x="18" y="14" fill="#A1A1AA" font-size="12" class="font-sans">JSON Formatter</text>
+      
+      <circle cx="6" cy="34" r="2" fill="#71717A"/>
+      <text x="18" y="38" fill="#71717A" font-size="12" class="font-sans">Inspecteur JWT</text>
+
+      <circle cx="6" cy="58" r="2" fill="#71717A"/>
+      <text x="18" y="62" fill="#71717A" font-size="12" class="font-sans">Générateur Hash / UUID</text>
+    </g>
+
+    <!-- Sidebar Bottom Local Security Card -->
+    <g transform="translate(32, 590)">
+      <rect x="0" y="0" width="216" height="96" rx="10" fill="#18181B" stroke="#27272A" stroke-width="1"/>
+      <g transform="translate(14, 14)">
+        <circle cx="12" cy="12" r="10" fill="#059669" fill-opacity="0.15"/>
+        <path d="M12 7 L16 9 V12 C16 15 12 17 12 17 C12 17 8 15 8 12 V9 Z" fill="#10B981"/>
+        <text x="30" y="12" fill="#F4F4F5" font-size="12" font-weight="600" class="font-sans">100% Chiffré Local</text>
+        <text x="30" y="26" fill="#71717A" font-size="10" class="font-sans">AES-256 GCM • Zéro Fuite</text>
+        <text x="0" y="48" fill="#A1A1AA" font-size="10" class="font-sans">Base SQLite/IndexedDB locale sécurisée</text>
+        <rect x="0" y="56" width="188" height="4" rx="2" fill="#27272A"/>
+        <rect x="0" y="56" width="188" height="4" rx="2" fill="url(#accent-emerald)"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== TOP BAR ==================== -->
+  <g id="topbar">
+    <rect x="260" y="58" width="1000" height="56" fill="#09090B" stroke="#27272A" stroke-width="1"/>
+    
+    <!-- Global Search / Command Bar -->
+    <g transform="translate(284, 70)">
+      <rect x="0" y="0" width="360" height="32" rx="8" fill="#18181B" stroke="#27272A" stroke-width="1"/>
+      <circle cx="18" cy="16" r="6" stroke="#71717A" stroke-width="1.6" fill="none"/>
+      <line x1="22.5" y1="20.5" x2="27" y2="25" stroke="#71717A" stroke-width="1.6"/>
+      <text x="36" y="20.5" fill="#71717A" font-size="12" class="font-sans">Recherche rapide, outils, commandes...</text>
+      <!-- Shortcut badge -->
+      <rect x="304" y="6" width="46" height="20" rx="4" fill="#27272A" stroke="#3F3F46" stroke-width="0.8"/>
+      <text x="327" y="19.5" fill="#A1A1AA" font-size="10" font-weight="600" text-anchor="middle" class="font-mono">⌘ K</text>
+    </g>
+
+    <!-- Topbar Actions & Badges -->
+    <g transform="translate(920, 70)">
+      <!-- Security Status Badge -->
+      <rect x="0" y="0" width="140" height="32" rx="8" fill="#10B981" fill-opacity="0.1" stroke="#10B981" stroke-opacity="0.3" stroke-width="1"/>
+      <circle cx="16" cy="16" r="4" fill="#10B981"/>
+      <text x="28" y="20" fill="#34D399" font-size="11" font-weight="600" class="font-sans">Coffre Déverrouillé</text>
+      
+      <!-- Language Selector Pill -->
+      <rect x="150" y="0" width="56" height="32" rx="8" fill="#18181B" stroke="#27272A" stroke-width="1"/>
+      <text x="178" y="20" fill="#E4E4E7" font-size="11" font-weight="600" text-anchor="middle" class="font-sans">FR ▾</text>
+
+      <!-- Theme Switcher Pill -->
+      <rect x="216" y="0" width="36" height="32" rx="8" fill="#18181B" stroke="#27272A" stroke-width="1"/>
+      <!-- Moon icon -->
+      <path d="M232 10 A6 6 0 1 0 240 18 A5 5 0 0 1 232 10 Z" fill="#F4F4F5"/>
+      
+      <!-- New Item Button -->
+      <rect x="262" y="0" width="60" height="32" rx="8" fill="url(#primary-glow)"/>
+      <text x="292" y="20.5" fill="#FFFFFF" font-size="12" font-weight="600" text-anchor="middle" class="font-sans">+ Créer</text>
+    </g>
+  </g>
+
+  <!-- ==================== MAIN CONTENT AREA ==================== -->
+  <g id="main-content" transform="translate(284, 134)">
+    
+    <!-- Hero Banner Card -->
+    <g id="hero-banner">
+      <rect x="0" y="0" width="952" height="92" rx="14" fill="url(#card-hero)" stroke="#27272A" stroke-width="1"/>
+      
+      <g transform="translate(24, 22)">
+        <text x="0" y="22" fill="#FFFFFF" font-size="20" font-weight="700" letter-spacing="-0.02em" class="font-sans">Bienvenue dans DevCockpit 🚀</text>
+        <rect x="300" y="4" width="138" height="22" rx="6" fill="#4F46E5" fill-opacity="0.25" stroke="#6366F1" stroke-width="0.8"/>
+        <text x="369" y="19" fill="#C7D2FE" font-size="10" font-weight="600" text-anchor="middle" class="font-sans">v1.0.0 DESKTOP-READY</text>
+        
+        <text x="0" y="48" fill="#A1A1AA" font-size="12" class="font-sans">Votre station de travail locale pour sécuriser vos clés, profiler vos prompts IA, gérer vos serveurs MCP et convertir du code sans fuite de données.</text>
+      </g>
+
+      <!-- Quick Action Buttons inside Hero -->
+      <g transform="translate(730, 26)">
+        <rect x="0" y="0" width="100" height="38" rx="8" fill="#27272A" stroke="#3F3F46" stroke-width="1"/>
+        <text x="50" y="23" fill="#F4F4F5" font-size="12" font-weight="600" text-anchor="middle" class="font-sans">Nouveau Secret</text>
+
+        <rect x="110" y="0" width="90" height="38" rx="8" fill="url(#primary-glow)"/>
+        <text x="155" y="23" fill="#FFFFFF" font-size="12" font-weight="600" text-anchor="middle" class="font-sans">Ouvrir Outils</text>
+      </g>
+    </g>
+
+    <!-- 4 Stats Cards Row -->
+    <g id="stats-row" transform="translate(0, 108)">
+      <!-- Card 1: Clés d'API -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="226" height="88" rx="12" fill="url(#card-grad)" stroke="#27272A" stroke-width="1"/>
+        <g transform="translate(18, 16)">
+          <rect x="0" y="0" width="34" height="34" rx="8" fill="#4F46E5" fill-opacity="0.15"/>
+          <circle cx="17" cy="17" r="6" stroke="#818CF8" stroke-width="2" fill="none"/>
+          <text x="44" y="16" fill="#A1A1AA" font-size="11" font-weight="500" class="font-sans">Clés Actives</text>
+          <text x="44" y="38" fill="#FFFFFF" font-size="22" font-weight="700" class="font-sans">6 / 6</text>
+          <text x="0" y="54" fill="#34D399" font-size="10" font-weight="500" class="font-sans">✓ 100% Fonctionnelles</text>
+        </g>
+      </g>
+
+      <!-- Card 2: Coffre Secrets -->
+      <g transform="translate(242, 0)">
+        <rect x="0" y="0" width="226" height="88" rx="12" fill="url(#card-grad)" stroke="#27272A" stroke-width="1"/>
+        <g transform="translate(18, 16)">
+          <rect x="0" y="0" width="34" height="34" rx="8" fill="#059669" fill-opacity="0.15"/>
+          <path d="M17 11 L23 14 V18 C23 21 17 24 17 24 C17 24 11 21 11 18 V14 Z" fill="#34D399"/>
+          <text x="44" y="16" fill="#A1A1AA" font-size="11" font-weight="500" class="font-sans">Secrets Chiffrés</text>
+          <text x="44" y="38" fill="#FFFFFF" font-size="22" font-weight="700" class="font-sans">18</text>
+          <text x="0" y="54" fill="#A1A1AA" font-size="10" font-weight="500" class="font-sans">AES-256 GCM Client</text>
+        </g>
+      </g>
+
+      <!-- Card 3: Templates Prompts -->
+      <g transform="translate(484, 0)">
+        <rect x="0" y="0" width="226" height="88" rx="12" fill="url(#card-grad)" stroke="#27272A" stroke-width="1"/>
+        <g transform="translate(18, 16)">
+          <rect x="0" y="0" width="34" height="34" rx="8" fill="#D97706" fill-opacity="0.15"/>
+          <path d="M17 10 L19 14 L24 16 L19 18 L17 23 L15 18 L10 16 L15 14 Z" fill="#FBBF24"/>
+          <text x="44" y="16" fill="#A1A1AA" font-size="11" font-weight="500" class="font-sans">Templates Prompts</text>
+          <text x="44" y="38" fill="#FFFFFF" font-size="22" font-weight="700" class="font-sans">14</text>
+          <text x="0" y="54" fill="#A1A1AA" font-size="10" font-weight="500" class="font-sans">Variables dynamiques</text>
+        </g>
+      </g>
+
+      <!-- Card 4: Serveurs MCP -->
+      <g transform="translate(726, 0)">
+        <rect x="0" y="0" width="226" height="88" rx="12" fill="url(#card-grad)" stroke="#27272A" stroke-width="1"/>
+        <g transform="translate(18, 16)">
+          <rect x="0" y="0" width="34" height="34" rx="8" fill="#0284C7" fill-opacity="0.15"/>
+          <path d="M13 14 L18 19 L13 24 M19 24 H24" stroke="#38BDF8" stroke-width="2" stroke-linecap="round"/>
+          <text x="44" y="16" fill="#A1A1AA" font-size="11" font-weight="500" class="font-sans">Serveurs MCP</text>
+          <text x="44" y="38" fill="#FFFFFF" font-size="22" font-weight="700" class="font-sans">4 Prêts</text>
+          <text x="0" y="54" fill="#38BDF8" font-size="10" font-weight="500" class="font-sans">Claude &amp; Cursor sync</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Main Section: 2 Columns (Left: Quick Offline Tools, Right: Live API Health & Activity) -->
+    <g id="dashboard-grid" transform="translate(0, 212)">
+      <!-- Left Column: Boîte à Outils Rapides (width: 580) -->
+      <g>
+        <rect x="0" y="0" width="580" height="350" rx="14" fill="#141417" stroke="#27272A" stroke-width="1"/>
+        <g transform="translate(20, 18)">
+          <text x="0" y="16" fill="#FFFFFF" font-size="15" font-weight="600" class="font-sans">Outils Développeur Favoris</text>
+          <text x="0" y="34" fill="#71717A" font-size="11" class="font-sans">Traitement 100% côté client instantané avec copie en un clic.</text>
+        </g>
+
+        <!-- 6 Tools Grid inside -->
+        <g transform="translate(20, 68)">
+          <!-- Tool 1: JSON Formatter -->
+          <g transform="translate(0, 0)">
+            <rect x="0" y="0" width="168" height="120" rx="10" fill="#1C1C21" stroke="#2E2E35" stroke-width="1"/>
+            <rect x="12" y="12" width="28" height="28" rx="6" fill="#4F46E5" fill-opacity="0.2"/>
+            <text x="26" y="30" fill="#818CF8" font-size="12" font-weight="700" text-anchor="middle" class="font-mono">{ }</text>
+            <text x="12" y="60" fill="#F4F4F5" font-size="13" font-weight="600" class="font-sans">JSON Formatter</text>
+            <text x="12" y="78" fill="#71717A" font-size="10" class="font-sans">Valider, indenter &amp; minifier</text>
+            <rect x="12" y="90" width="76" height="18" rx="4" fill="#27272A"/>
+            <text x="50" y="102" fill="#A1A1AA" font-size="9" font-weight="600" text-anchor="middle" class="font-sans">Ouvrir l'outil →</text>
+          </g>
+
+          <!-- Tool 2: JWT Inspector -->
+          <g transform="translate(186, 0)">
+            <rect x="0" y="0" width="168" height="120" rx="10" fill="#1C1C21" stroke="#2E2E35" stroke-width="1"/>
+            <rect x="12" y="12" width="28" height="28" rx="6" fill="#059669" fill-opacity="0.2"/>
+            <text x="26" y="30" fill="#34D399" font-size="11" font-weight="700" text-anchor="middle" class="font-mono">JWT</text>
+            <text x="12" y="60" fill="#F4F4F5" font-size="13" font-weight="600" class="font-sans">Inspecteur JWT</text>
+            <text x="12" y="78" fill="#71717A" font-size="10" class="font-sans">Décoder payload &amp; exp</text>
+            <rect x="12" y="90" width="76" height="18" rx="4" fill="#27272A"/>
+            <text x="50" y="102" fill="#A1A1AA" font-size="9" font-weight="600" text-anchor="middle" class="font-sans">Ouvrir l'outil →</text>
+          </g>
+
+          <!-- Tool 3: Hash Generator -->
+          <g transform="translate(372, 0)">
+            <rect x="0" y="0" width="168" height="120" rx="10" fill="#1C1C21" stroke="#2E2E35" stroke-width="1"/>
+            <rect x="12" y="12" width="28" height="28" rx="6" fill="#D97706" fill-opacity="0.2"/>
+            <text x="26" y="30" fill="#FBBF24" font-size="13" font-weight="700" text-anchor="middle" class="font-mono">#</text>
+            <text x="12" y="60" fill="#F4F4F5" font-size="13" font-weight="600" class="font-sans">Générateur Hash</text>
+            <text x="12" y="78" fill="#71717A" font-size="10" class="font-sans">SHA256, SHA512, MD5</text>
+            <rect x="12" y="90" width="76" height="18" rx="4" fill="#27272A"/>
+            <text x="50" y="102" fill="#A1A1AA" font-size="9" font-weight="600" text-anchor="middle" class="font-sans">Ouvrir l'outil →</text>
+          </g>
+
+          <!-- Tool 4: Base64 & Text -->
+          <g transform="translate(0, 134)">
+            <rect x="0" y="0" width="168" height="120" rx="10" fill="#1C1C21" stroke="#2E2E35" stroke-width="1"/>
+            <rect x="12" y="12" width="28" height="28" rx="6" fill="#0284C7" fill-opacity="0.2"/>
+            <text x="26" y="30" fill="#38BDF8" font-size="11" font-weight="700" text-anchor="middle" class="font-mono">64</text>
+            <text x="12" y="60" fill="#F4F4F5" font-size="13" font-weight="600" class="font-sans">Base64 Encoder</text>
+            <text x="12" y="78" fill="#71717A" font-size="10" class="font-sans">Chaînes &amp; Fichiers</text>
+            <rect x="12" y="90" width="76" height="18" rx="4" fill="#27272A"/>
+            <text x="50" y="102" fill="#A1A1AA" font-size="9" font-weight="600" text-anchor="middle" class="font-sans">Ouvrir l'outil →</text>
+          </g>
+
+          <!-- Tool 5: UUID Generator -->
+          <g transform="translate(186, 134)">
+            <rect x="0" y="0" width="168" height="120" rx="10" fill="#1C1C21" stroke="#2E2E35" stroke-width="1"/>
+            <rect x="12" y="12" width="28" height="28" rx="6" fill="#7C3AED" fill-opacity="0.2"/>
+            <text x="26" y="30" fill="#A78BFA" font-size="11" font-weight="700" text-anchor="middle" class="font-mono">ID</text>
+            <text x="12" y="60" fill="#F4F4F5" font-size="13" font-weight="600" class="font-sans">UUID v4 &amp; NanoID</text>
+            <text x="12" y="78" fill="#71717A" font-size="10" class="font-sans">Génération unique en lot</text>
+            <rect x="12" y="90" width="76" height="18" rx="4" fill="#27272A"/>
+            <text x="50" y="102" fill="#A1A1AA" font-size="9" font-weight="600" text-anchor="middle" class="font-sans">Ouvrir l'outil →</text>
+          </g>
+
+          <!-- Tool 6: Regex Tester -->
+          <g transform="translate(372, 134)">
+            <rect x="0" y="0" width="168" height="120" rx="10" fill="#1C1C21" stroke="#2E2E35" stroke-width="1"/>
+            <rect x="12" y="12" width="28" height="28" rx="6" fill="#EC4899" fill-opacity="0.2"/>
+            <text x="26" y="30" fill="#F472B6" font-size="11" font-weight="700" text-anchor="middle" class="font-mono">/.* /</text>
+            <text x="12" y="60" fill="#F4F4F5" font-size="13" font-weight="600" class="font-sans">Testeur Regex</text>
+            <text x="12" y="78" fill="#71717A" font-size="10" class="font-sans">Matches &amp; capture groups</text>
+            <rect x="12" y="90" width="76" height="18" rx="4" fill="#27272A"/>
+            <text x="50" y="102" fill="#A1A1AA" font-size="9" font-weight="600" text-anchor="middle" class="font-sans">Ouvrir l'outil →</text>
+          </g>
+        </g>
+      </g>
+
+      <!-- Right Column: Clés API & Statut en direct (width: 352) -->
+      <g transform="translate(600, 0)">
+        <rect x="0" y="0" width="352" height="350" rx="14" fill="#141417" stroke="#27272A" stroke-width="1"/>
+        <g transform="translate(20, 18)">
+          <text x="0" y="16" fill="#FFFFFF" font-size="15" font-weight="600" class="font-sans">Santé des Clés d'API &amp; Cloud</text>
+          <text x="0" y="34" fill="#71717A" font-size="11" class="font-sans">Test de connectivité direct sans passerelle tierce.</text>
+        </g>
+
+        <!-- API Health List -->
+        <g transform="translate(20, 68)">
+          <!-- Provider 1: OpenAI -->
+          <g transform="translate(0, 0)">
+            <rect x="0" y="0" width="312" height="52" rx="8" fill="#1A1A1F" stroke="#2B2B33" stroke-width="1"/>
+            <rect x="10" y="10" width="32" height="32" rx="6" fill="#10A37F" fill-opacity="0.2"/>
+            <circle cx="26" cy="26" r="8" fill="#10A37F"/>
+            <text x="50" y="24" fill="#FFFFFF" font-size="13" font-weight="600" class="font-sans">OpenAI API Key</text>
+            <text x="50" y="38" fill="#71717A" font-size="10" class="font-mono">sk-proj-••••••••9F4d</text>
+            <rect x="236" y="16" width="64" height="20" rx="4" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-opacity="0.4" stroke-width="0.8"/>
+            <text x="268" y="30" fill="#34D399" font-size="10" font-weight="600" text-anchor="middle" class="font-sans">42 ms • OK</text>
+          </g>
+
+          <!-- Provider 2: Anthropic Claude -->
+          <g transform="translate(0, 60)">
+            <rect x="0" y="0" width="312" height="52" rx="8" fill="#1A1A1F" stroke="#2B2B33" stroke-width="1"/>
+            <rect x="10" y="10" width="32" height="32" rx="6" fill="#D97706" fill-opacity="0.2"/>
+            <circle cx="26" cy="26" r="8" fill="#D97706"/>
+            <text x="50" y="24" fill="#FFFFFF" font-size="13" font-weight="600" class="font-sans">Anthropic Claude</text>
+            <text x="50" y="38" fill="#71717A" font-size="10" class="font-mono">sk-ant-••••••••k21a</text>
+            <rect x="236" y="16" width="64" height="20" rx="4" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-opacity="0.4" stroke-width="0.8"/>
+            <text x="268" y="30" fill="#34D399" font-size="10" font-weight="600" text-anchor="middle" class="font-sans">65 ms • OK</text>
+          </g>
+
+          <!-- Provider 3: Google Gemini -->
+          <g transform="translate(0, 120)">
+            <rect x="0" y="0" width="312" height="52" rx="8" fill="#1A1A1F" stroke="#2B2B33" stroke-width="1"/>
+            <rect x="10" y="10" width="32" height="32" rx="6" fill="#4F46E5" fill-opacity="0.2"/>
+            <circle cx="26" cy="26" r="8" fill="#6366F1"/>
+            <text x="50" y="24" fill="#FFFFFF" font-size="13" font-weight="600" class="font-sans">Google Gemini AI</text>
+            <text x="50" y="38" fill="#71717A" font-size="10" class="font-mono">AIzaSy••••••••x41b</text>
+            <rect x="236" y="16" width="64" height="20" rx="4" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-opacity="0.4" stroke-width="0.8"/>
+            <text x="268" y="30" fill="#34D399" font-size="10" font-weight="600" text-anchor="middle" class="font-sans">38 ms • OK</text>
+          </g>
+
+          <!-- Provider 4: GitHub Personal Access Token -->
+          <g transform="translate(0, 180)">
+            <rect x="0" y="0" width="312" height="52" rx="8" fill="#1A1A1F" stroke="#2B2B33" stroke-width="1"/>
+            <rect x="10" y="10" width="32" height="32" rx="6" fill="#3F3F46" fill-opacity="0.5"/>
+            <circle cx="26" cy="26" r="8" fill="#71717A"/>
+            <text x="50" y="24" fill="#FFFFFF" font-size="13" font-weight="600" class="font-sans">GitHub Token (PAT)</text>
+            <text x="50" y="38" fill="#71717A" font-size="10" class="font-mono">ghp_••••••••dvRj</text>
+            <rect x="236" y="16" width="64" height="20" rx="4" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-opacity="0.4" stroke-width="0.8"/>
+            <text x="268" y="30" fill="#34D399" font-size="10" font-weight="600" text-anchor="middle" class="font-sans">Actif • Valide</text>
+          </g>
+        </g>
+      </g>
+    </g>
+
+  </g>
+</svg>
