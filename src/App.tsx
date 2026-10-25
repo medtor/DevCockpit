@@ -5,6 +5,7 @@ import { Sidebar } from './components/layout/Sidebar';
 import { Topbar } from './components/layout/Topbar';
 import { CommandPalette } from './components/layout/CommandPalette';
 import { ToastProvider } from './components/ui/ToastProvider';
+import { SecurityGate } from './components/security/SecurityGate';
 
 // Views
 import { DashboardView } from './features/dashboard/DashboardView';
@@ -20,7 +21,7 @@ import { SnippetsView } from './features/snippets/SnippetsView';
 import { SettingsView } from './features/settings/SettingsView';
 
 export default function App() {
-  const { activeTab, language, theme } = useAppStore();
+  const { activeTab, language, theme, securityStatus } = useAppStore();
   const { initStorage } = useDataStore();
 
   useEffect(() => {
@@ -38,6 +39,8 @@ export default function App() {
       document.documentElement.classList.remove('dark');
     }
   }, [language, theme]);
+
+  if (securityStatus !== 'unlocked') return <SecurityGate />;
 
   const renderActiveView = () => {
     switch (activeTab) {

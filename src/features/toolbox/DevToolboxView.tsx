@@ -5,6 +5,8 @@ import {
   FileJson,
   Binary,
   Fingerprint,
+  KeyRound,
+  CalendarClock,
   Hash,
   SearchCode,
   Clock,
@@ -29,6 +31,8 @@ import { getPlatformAdapters } from '../../core/adapters';
 import { useToastStore } from '../../store/useToastStore';
 import { useAppStore } from '../../store/useAppStore';
 import { QrGeneratorTool } from './QrGeneratorTool';
+import { JwtDecoderTool } from './JwtDecoderTool';
+import { CronParserTool } from './CronParserTool';
 
 export interface ToolboxToolItem {
   id: string;
@@ -52,6 +56,20 @@ export const TOOLBOX_TOOLS: ToolboxToolItem[] = [
     description: 'Format, validate, prettify, minify JSON data, and generate TypeScript interfaces.',
     tags: ['json', 'typescript', 'interface', 'types', 'prettify', 'minify', 'formatter', 'validator', 'schema'],
     icon: <FileJson className="h-4 w-4" />,
+  },
+  {
+    id: 'jwt',
+    name: 'JWT Decoder',
+    description: 'Decode JWT header and payload locally; signature and claims are not validated.',
+    tags: ['jwt', 'token', 'json web token', 'decode', 'header', 'payload', 'signature', 'offline'],
+    icon: <KeyRound className="h-4 w-4" />,
+  },
+  {
+    id: 'cron',
+    name: 'Cron Parser',
+    description: 'Explain five-field numeric Unix cron schedules and preview five runs in an IANA timezone.',
+    tags: ['cron', 'schedule', 'scheduler', 'expression', 'timezone', 'offline', 'runs'],
+    icon: <CalendarClock className="h-4 w-4" />,
   },
   {
     id: 'base64',
@@ -565,6 +583,12 @@ export const DevToolboxView: React.FC = () => {
         <>
           {/* 0. QR GENERATOR TOOL */}
           {activeTool === 'qr' && <QrGeneratorTool />}
+
+          {/* JWT DECODER TOOL */}
+          {activeTool === 'jwt' && <JwtDecoderTool />}
+
+          {/* CRON PARSER TOOL */}
+          {activeTool === 'cron' && <CronParserTool />}
 
           {/* 1. JSON & TYPESCRIPT TOOL */}
           {activeTool === 'json' && (

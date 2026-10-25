@@ -15,6 +15,8 @@ import { useDataStore } from '../../store/useDataStore';
 import { getTranslation } from '../../core/i18n/translations';
 import { SupportedLanguage } from '../../types';
 import { useToastStore } from '../../store/useToastStore';
+import { encryptJson } from '../../core/security/encrypted-envelope.js';
+import { runExportIfUnlocked } from '../../core/security/export-guard.js';
 
 export const Topbar: React.FC = () => {
   const {
@@ -25,12 +27,12 @@ export const Topbar: React.FC = () => {
     setLanguage,
     setCommandPaletteOpen,
     isVaultUnlocked,
-    lockVault,
+    masterVaultKey,
     setActiveTab,
     toggleSidebar,
   } = useAppStore();
 
-  const { exportBackupData } = useDataStore();
+  const { exportBackupData, lockSecureStorage } = useDataStore();
   const { showToast } = useToastStore();
 
   const getTabTitle = () => {
@@ -62,20 +64,33 @@ export const Topbar: React.FC = () => {
     }
   };
 
-  const handleQuickExport = () => {
+  const handleQuickExport = async () => {
+    if (!masterVaultKey) {
+      showToast('error', 'Unlock the workspace before exporting a backup');
+      return;
+    }
     try {
-      const data = exportBackupData();
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      const dateStr = new Date().toISOString().split('T')[0];
-      a.href = url;
-      a.download = `devdesk-backup-${dateStr}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-      showToast('success', 'Backup downloaded successfully');
+      const exported = await runExportIfUnlocked(
+        () => encryptJson(exportBackupData(), masterVaultKey),
+        () => {
+          const current = useAppStore.getState();
+          return current.securityStatus === 'unlocked' && current.masterVaultKey === masterVaultKey;
+        },
+        (data: unknown) => {
+          const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          const dateStr = new Date().toISOString().split('T')[0];
+          a.href = url;
+          a.download = `devcockpit-encrypted-backup-${dateStr}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+        },
+      );
+      if (!exported) return;
+      showToast('success', 'Encrypted backup downloaded');
     } catch {
-      showToast('error', 'Export failed');
+      showToast('error', 'Encrypted backup export failed');
     }
   };
 
@@ -134,10 +149,10 @@ export const Topbar: React.FC = () => {
         {/* Vault Status Indicator */}
         <button
           type="button"
-          onClick={() => {
+          onClick={async () => {
             if (isVaultUnlocked) {
-              lockVault();
-              showToast('info', 'Vault Locked', 'Master password cleared from memory');
+              const locked = await lockSecureStorage();
+              if (locked) showToast('info', 'Workspace Locked', 'Encrypted data is cleared from memory');
             } else {
               setActiveTab('vault');
             }

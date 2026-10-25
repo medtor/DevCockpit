@@ -32,6 +32,7 @@ import { Modal } from '../../components/ui/Modal';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { getPlatformAdapters } from '../../core/adapters';
 import { useToastStore } from '../../store/useToastStore';
+import { estimatePassphraseEntropy, generatePassphrase, generateRandomPassword } from '../../core/security/password-generator.js';
 
 const EFF_WORDLIST = [
   'correct', 'horse', 'battery', 'staple', 'quantum', 'cipher', 'stellar', 'plasma',
@@ -41,8 +42,8 @@ const EFF_WORDLIST = [
 ];
 
 export const PasswordVaultView: React.FC = () => {
-  const { isVaultUnlocked, unlockVault, lockVault, masterVaultKey } = useAppStore();
-  const { vaultItems, addVaultItem, updateVaultItem, deleteVaultItem } = useDataStore();
+  const { isVaultUnlocked, masterVaultKey } = useAppStore();
+  const { vaultItems, addVaultItem, updateVaultItem, deleteVaultItem, lockSecureStorage, unlockStorage } = useDataStore();
   const { showToast } = useToastStore();
 
   // Master key unlock dialog state
@@ -80,56 +81,48 @@ export const PasswordVaultView: React.FC = () => {
 
   const generateNewPassword = () => {
     const cryptoAdapter = getPlatformAdapters().crypto;
-    let pwd = '';
-
-    if (genMode === 'passphrase') {
-      const words: string[] = [];
-      for (let i = 0; i < wordCount; i++) {
-        const randIdx = Math.floor(Math.random() * EFF_WORDLIST.length);
-        let word = EFF_WORDLIST[randIdx];
-        if (useUpper && i === 0) {
-          word = word.charAt(0).toUpperCase() + word.slice(1);
-        }
-        words.push(word);
-      }
-      if (useNumbers) {
-        words.push(String(Math.floor(Math.random() * 90 + 10)));
-      }
-      pwd = words.join(wordSeparator);
-    } else {
-      let chars = '';
-      if (useUpper) chars += avoidAmbiguous ? 'ABCDEFGHJKLMNPQRSTUVWXYZ' : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      if (useLower) chars += avoidAmbiguous ? 'abcdefghijkmnopqrstuvwxyz' : 'abcdefghijklmnopqrstuvwxyz';
-      if (useNumbers) chars += avoidAmbiguous ? '23456789' : '0123456789';
-      if (useSymbols) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
-
-      if (!chars) chars = 'abcdefghijklmnopqrstuvwxyz';
-
-      const randomBytes = new Uint8Array(genLength);
-      crypto.getRandomValues(randomBytes);
-      for (let i = 0; i < genLength; i++) {
-        pwd += chars[randomBytes[i] % chars.length];
-      }
-    }
+    const pwd = genMode === 'passphrase'
+      ? generatePassphrase({
+          wordList: EFF_WORDLIST,
+          wordCount,
+          appendNumber: useNumbers,
+          capitalizeFirst: useUpper,
+          separator: wordSeparator,
+        })
+      : generateRandomPassword({
+          length: genLength,
+          characters: [
+            useUpper ? (avoidAmbiguous ? 'ABCDEFGHJKLMNPQRSTUVWXYZ' : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') : '',
+            useLower ? (avoidAmbiguous ? 'abcdefghijkmnopqrstuvwxyz' : 'abcdefghijklmnopqrstuvwxyz') : '',
+            useNumbers ? (avoidAmbiguous ? '23456789' : '0123456789') : '',
+            useSymbols ? '!@#$%^&*()_+-=[]{}|;:,.<>?' : '',
+          ].join('') || 'abcdefghijklmnopqrstuvwxyz',
+        });
 
     setGeneratedPassword(pwd);
-    setEntropyStats(cryptoAdapter.calculatePasswordEntropy(pwd));
+    setEntropyStats(genMode === 'passphrase'
+      ? estimatePassphraseEntropy(wordCount, EFF_WORDLIST.length, useNumbers)
+      : cryptoAdapter.calculatePasswordEntropy(pwd));
   };
 
   useEffect(() => {
     generateNewPassword();
   }, [genMode, genLength, useUpper, useLower, useNumbers, useSymbols, avoidAmbiguous, wordCount, wordSeparator]);
 
-  const handleUnlock = (e: React.FormEvent) => {
+  const handleUnlock = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!masterPasswordInput.trim()) {
       showToast('error', 'Master password is required');
       return;
     }
-    unlockVault(masterPasswordInput);
-    setIsUnlockModalOpen(false);
-    setMasterPasswordInput('');
-    showToast('success', 'Vault Unlocked', 'Web Crypto AES-GCM session active');
+    try {
+      await unlockStorage(masterPasswordInput);
+      setIsUnlockModalOpen(false);
+      setMasterPasswordInput('');
+      showToast('success', 'Workspace unlocked');
+    } catch (error) {
+      showToast('error', error instanceof Error ? error.message : 'Unable to unlock workspace');
+    }
   };
 
   const handleCopy = async (text: string, label: string) => {
@@ -242,9 +235,9 @@ export const PasswordVaultView: React.FC = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => {
-                lockVault();
-                showToast('info', 'Vault Locked');
+              onClick={async () => {
+                const locked = await lockSecureStorage();
+                if (locked) showToast('info', 'Workspace Locked');
               }}
             >
               <Lock className="h-3.5 w-3.5 -ms-0.5 me-1.5 text-amber-500" />

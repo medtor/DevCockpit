@@ -65,13 +65,13 @@ Sécurisation de vos jetons (OpenAI, Claude, Gemini, GitHub...) chiffrés locale
 ### 🛠️ Boîte à Outils Développeur Hors-Ligne (Offline Toolbox)
 Un ensemble complet d'utilitaires avec recherche instantanée et copie en un clic avec retours visuels :
 - **JSON** : Formateur, validateur et minificateur avec détection d'erreurs.
-- **JWT** : Décodeur et inspecteur de jetons (Header, Payload, expiration).
+- **JWT Decoder** : décode localement le header et le payload d’un JWT; affiche la signature brute ou son absence. Le décodage ne vérifie pas la signature et ne valide ni l’émetteur, ni l’audience, ni l’expiration : ne faites jamais confiance aux claims sur cette base.
 - **Base64** : Encodeur / Décodeur de chaînes de caractères et de données binaires.
 - **Hash Generator** : SHA-256, SHA-512, MD5, SHA-1 en temps réel.
 - **UUID & NanoID** : Générateur d'identifiants uniques v4 en masse.
 - **URL & Slug** : Encodeur / Décodeur d'URLs et générateur de slugs SEO.
 - **Regex Tester** : Test d'expressions régulières avec surlignage des correspondances.
-- **Cron Parser** : Explication en langage clair et prévisualisation des prochaines exécutions.
+- **Cron Parser** : analyse hors ligne les expressions Unix numériques à cinq champs (`*`, listes, plages et pas), explique le calendrier et prévisualise jusqu’à cinq occurrences dans un fuseau IANA modifiable (celui du navigateur par défaut), sur un horizon de 25 ans. DOM/DOW suit la sémantique standard : OU si les deux champs sont restreints, sinon `*` laisse l’autre déterminer le jour; 0 et 7 signifient dimanche. Pas de secondes, noms, alias spéciaux ni année. Une expression valide peut ne produire aucune occurrence dans l’horizon. La prévisualisation saute les heures locales inexistantes et peut afficher deux fois une heure ambiguë; les planificateurs peuvent différer.
 - **Convertisseur de Couleurs & CSS** : HEX, RGB, HSL.
 
 ### 🎨 Expérience Utilisateur
@@ -142,9 +142,11 @@ DevCockpit/
 
 ## 🔒 Confidentialité & Sécurité
 
-1. **Zero-Knowledge Architecture** : Aucune donnée saisie dans le coffre-fort n'est envoyée vers un tiers.
-2. **Chiffrement fort** : Les clés sont dérivées via PBKDF2 et chiffrées en AES-GCM avec vecteur d'initialisation aléatoire unique.
-3. **Isolation navigateur** : Les clés API testées utilisent des requêtes sécurisées côté client ou proxy sécurisé sans conservation de logs.
+- **Chiffrement local** : Le contenu du workspace est chiffré dans le navigateur avec AES-GCM 256 bits. Une clé est dérivée du mot de passe maître avec PBKDF2-HMAC-SHA-256 (600 000 itérations), sel et IV aléatoires.
+- **Verrouillage** : Le workspace demande un mot de passe maître à chaque ouverture. Les données locales existantes sont migrées vers le format chiffré après validation de la sauvegarde ; l’ancienne copie en clair est supprimée seulement après vérification du chiffrement.
+- **Sauvegardes** : Les exports sont chiffrés avec le mot de passe maître. Conservez ce mot de passe : il n’existe pas de récupération côté serveur et une sauvegarde chiffrée ne peut pas être ouverte sans lui.
+- **Requêtes externes** : Les clés API restent locales au repos, mais un test de clé envoie cette clé au fournisseur/API choisi par l’utilisateur.
+- **Limite de sécurité** : Le chiffrement au repos protège les données stockées, pas une application compromise, une extension malveillante ou un appareil déjà déverrouillé.
 
 ---
 

@@ -26,6 +26,7 @@ interface AppState {
   activityLogs: ActivityLog[];
   dashboardWidgets: DashboardWidgetConfig[];
   isVaultUnlocked: boolean;
+  securityStatus: 'loading' | 'setup' | 'migration' | 'locked' | 'locking' | 'unlocked' | 'error';
   masterVaultKey: string | null;
   activeToolboxTab: string;
 
@@ -41,6 +42,7 @@ interface AppState {
   logActivity: (action: string, targetType: string, targetTitle: string) => void;
   unlockVault: (masterKey: string) => void;
   lockVault: () => void;
+  setSecurityStatus: (status: AppState['securityStatus']) => void;
   toggleWidgetVisibility: (id: string) => void;
   reorderWidgets: (newWidgets: DashboardWidgetConfig[]) => void;
 }
@@ -94,6 +96,7 @@ export const useAppStore = create<AppState>((set, get) => {
     ],
     dashboardWidgets: INITIAL_WIDGETS,
     isVaultUnlocked: false,
+    securityStatus: 'loading',
     masterVaultKey: null,
     activeToolboxTab: 'qr',
 
@@ -163,12 +166,14 @@ export const useAppStore = create<AppState>((set, get) => {
     },
 
     unlockVault: (masterKey) => {
-      set({ isVaultUnlocked: true, masterVaultKey: masterKey });
+      set({ isVaultUnlocked: true, masterVaultKey: masterKey, securityStatus: 'unlocked' });
     },
 
     lockVault: () => {
-      set({ isVaultUnlocked: false, masterVaultKey: null });
+      set({ isVaultUnlocked: false, masterVaultKey: null, securityStatus: 'locked' });
     },
+
+    setSecurityStatus: (status: AppState['securityStatus']) => set({ securityStatus: status }),
 
     toggleWidgetVisibility: (id) => {
       set((state) => ({

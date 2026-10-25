@@ -25,6 +25,14 @@ import {
 import { getPlatformAdapters } from '../core/adapters';
 import { AppBackupDataSchema } from '../core/schema/backup.schema';
 import { useAppStore } from './useAppStore';
+import { SecureDataRepository } from '../core/security/secure-data-repository.js';
+import { useToastStore } from './useToastStore';
+import { flushBeforeLock, canMutateWorkspace } from '../core/security/flush-before-lock.js';
+import { PendingOperations } from '../core/security/pending-operations.js';
+
+let secureRepository: InstanceType<typeof SecureDataRepository> | null = null;
+let persistenceQueue: Promise<void> = Promise.resolve();
+const pendingImports = new PendingOperations();
 
 interface DataStoreState {
   isInitialized: boolean;
@@ -40,7 +48,10 @@ interface DataStoreState {
 
   // Init & Persistence
   initStorage: () => Promise<void>;
-  saveToStorage: () => Promise<void>;
+  saveToStorage: () => Promise<boolean>;
+  unlockStorage: (password: string) => Promise<void>;
+  initializeSecureStorage: (password: string, confirmation: string) => Promise<void>;
+  lockSecureStorage: () => Promise<boolean>;
 
   // API Keys Actions
   addApiKey: (item: Omit<ApiKeyItem, 'id' | 'createdAt'>) => void;
@@ -91,12 +102,17 @@ interface DataStoreState {
 
   // Backup & Restore
   exportBackupData: () => AppBackupData;
-  importBackupData: (jsonData: any, overwrite?: boolean) => { success: boolean; error?: string };
+  importBackupData: (jsonData: any, overwrite?: boolean) => Promise<{ success: boolean; error?: string }>;
   resetToDemoData: () => Promise<void>;
   clearAllData: () => Promise<void>;
 }
 
-export const useDataStore = create<DataStoreState>((set, get) => ({
+export const useDataStore = create<DataStoreState>((write, get) => {
+  const set: typeof write = (partial) => {
+    if (canMutateWorkspace(useAppStore.getState().securityStatus)) write(partial);
+  };
+
+  return {
   isInitialized: false,
   apiKeys: INITIAL_API_KEYS,
   prompts: INITIAL_PROMPTS,
@@ -111,38 +127,121 @@ export const useDataStore = create<DataStoreState>((set, get) => ({
   initStorage: async () => {
     try {
       const storage = getPlatformAdapters().storage;
-      const stored = await storage.get<AppBackupData>('main_data');
-      if (stored && stored.data) {
-        set({
-          apiKeys: stored.data.apiKeys || INITIAL_API_KEYS,
-          prompts: stored.data.prompts || INITIAL_PROMPTS,
-          mcp: stored.data.mcp || INITIAL_MCP_SERVERS,
-          skills: stored.data.skills || INITIAL_SKILLS,
-          bookmarks: stored.data.bookmarks || INITIAL_BOOKMARKS,
-          notes: stored.data.notes || INITIAL_NOTES,
-          todos: stored.data.todos || INITIAL_TODOS,
-          snippets: stored.data.snippets || INITIAL_SNIPPETS,
-          vaultItems: stored.data.passwords || INITIAL_VAULT_ITEMS,
-          isInitialized: true,
-        });
-      } else {
-        // Save initial demo data
-        await get().saveToStorage();
-        set({ isInitialized: true });
-      }
-    } catch {
+      secureRepository = new SecureDataRepository(storage);
+      const inspection = await secureRepository.inspect();
+      useAppStore.getState().setSecurityStatus(inspection.status as 'setup' | 'migration' | 'locked');
+      set({ isInitialized: true });
+    } catch (error) {
+      console.error('Secure storage initialization failed:', error);
+      useAppStore.getState().setSecurityStatus('error');
       set({ isInitialized: true });
     }
   },
 
   saveToStorage: async () => {
+    let saved = true;
+    persistenceQueue = persistenceQueue.catch(() => undefined).then(async () => {
+      const appState = useAppStore.getState();
+      if (!secureRepository || !appState.masterVaultKey || !['unlocked', 'locking'].includes(appState.securityStatus)) {
+        saved = false;
+        return;
+      }
+      await secureRepository.save(get().exportBackupData(), appState.masterVaultKey);
+    });
     try {
-      const storage = getPlatformAdapters().storage;
-      const backup = get().exportBackupData();
-      await storage.set('main_data', backup);
+      await persistenceQueue;
+      return saved;
     } catch (err) {
-      console.warn('Storage save failed:', err);
+      console.warn('Encrypted storage save failed:', err);
+      useToastStore.getState().showToast('error', 'Encrypted save failed', 'Changes may not be saved locally. Check browser storage availability.');
+      return false;
     }
+  },
+
+  unlockStorage: async (password: string) => {
+    if (!secureRepository) throw new Error('Secure storage is not ready');
+    const inspection = await secureRepository.inspect();
+    if (inspection.status !== 'locked') throw new Error('Encrypted storage is not ready to unlock');
+    const backup = await secureRepository.unlock(
+      password,
+      (value) => AppBackupDataSchema.safeParse(value).success,
+    );
+    const parsed = AppBackupDataSchema.safeParse(backup);
+    if (!parsed.success) throw new Error('Stored data has an invalid format; it was not changed');
+    const data = parsed.data.data;
+    write({
+      apiKeys: data.apiKeys,
+      prompts: data.prompts,
+      mcp: data.mcp,
+      skills: data.skills,
+      bookmarks: data.bookmarks,
+      notes: data.notes,
+      todos: data.todos,
+      snippets: data.snippets,
+      vaultItems: data.passwords,
+      isInitialized: true,
+    });
+    pendingImports.open();
+    useAppStore.getState().unlockVault(password);
+  },
+
+  initializeSecureStorage: async (password: string, confirmation: string) => {
+    if (!secureRepository) throw new Error('Secure storage is not ready');
+    if (password.length < 12) throw new Error('Use a master password with at least 12 characters');
+    if (password !== confirmation) throw new Error('The passwords do not match');
+
+    const inspection = await secureRepository.inspect();
+    let backup: AppBackupData;
+    if (inspection.status === 'setup') {
+      backup = get().exportBackupData();
+      await secureRepository.initialize(password, backup);
+    } else if (inspection.status === 'migration') {
+      const legacy = await secureRepository.migrateLegacy(
+        password,
+        (value) => AppBackupDataSchema.safeParse(value).success,
+      );
+      const parsed = AppBackupDataSchema.safeParse(legacy);
+      if (!parsed.success) throw new Error('Legacy data has an invalid format; the original was preserved');
+      backup = parsed.data;
+    } else {
+      throw new Error('Secure storage is already initialized');
+    }
+
+    const data = backup.data;
+    write({
+      apiKeys: data.apiKeys,
+      prompts: data.prompts,
+      mcp: data.mcp,
+      skills: data.skills,
+      bookmarks: data.bookmarks,
+      notes: data.notes,
+      todos: data.todos,
+      snippets: data.snippets,
+      vaultItems: data.passwords,
+      isInitialized: true,
+    });
+    pendingImports.open();
+    useAppStore.getState().unlockVault(password);
+  },
+
+  lockSecureStorage: async () => {
+    if (useAppStore.getState().securityStatus !== 'unlocked') return false;
+    pendingImports.close();
+    useAppStore.getState().setSecurityStatus('locking');
+    await pendingImports.wait();
+    const locked = await flushBeforeLock(
+      () => get().saveToStorage(),
+      () => {
+        write({ apiKeys: [], prompts: [], mcp: [], skills: [], bookmarks: [], notes: [], todos: [], snippets: [], vaultItems: [] });
+        useAppStore.getState().lockVault();
+      },
+    );
+    if (!locked) {
+      pendingImports.open();
+      useAppStore.getState().setSecurityStatus('unlocked');
+      useToastStore.getState().showToast('error', 'Workspace remains unlocked', 'Save the encrypted data successfully before locking.');
+    }
+    return locked;
   },
 
   // API Keys
@@ -443,8 +542,18 @@ export const useDataStore = create<DataStoreState>((set, get) => ({
     };
   },
 
-  importBackupData: (jsonData, overwrite = false) => {
-    try {
+  importBackupData: async (jsonData: any, overwrite = false) => {
+    if (useAppStore.getState().securityStatus !== 'unlocked') {
+      return { success: false, error: 'Workspace is currently locking or unavailable' };
+    }
+    const finishImport = pendingImports.begin();
+    if (!finishImport) return { success: false, error: 'Workspace is currently locking or unavailable' };
+    return pendingImports.run(async () => {
+      if (useAppStore.getState().securityStatus !== 'unlocked') {
+        finishImport();
+        return { success: false, error: 'Workspace is currently locking or unavailable' };
+      }
+      try {
       const parsed = AppBackupDataSchema.safeParse(jsonData);
       if (!parsed.success) {
         return {
@@ -492,15 +601,32 @@ export const useDataStore = create<DataStoreState>((set, get) => ({
         });
       }
 
-      get().saveToStorage();
+      const saved = await get().saveToStorage();
+      if (!saved) {
+        write({
+          apiKeys: current.apiKeys,
+          prompts: current.prompts,
+          mcp: current.mcp,
+          skills: current.skills,
+          vaultItems: current.vaultItems,
+          bookmarks: current.bookmarks,
+          notes: current.notes,
+          todos: current.todos,
+          snippets: current.snippets,
+        });
+        return { success: false, error: 'Encrypted backup could not be saved; imported data was rolled back' };
+      }
 
       useAppStore
         .getState()
         .logActivity('Imported', 'Backup Data', `${parsed.data.schemaVersion} Backup`);
       return { success: true };
-    } catch (err: any) {
-      return { success: false, error: err.message || 'Invalid JSON format' };
-    }
+      } catch (err: any) {
+        return { success: false, error: err.message || 'Invalid JSON format' };
+      } finally {
+        finishImport();
+      }
+    });
   },
 
   resetToDemoData: async () => {
@@ -534,4 +660,5 @@ export const useDataStore = create<DataStoreState>((set, get) => ({
     await get().saveToStorage();
     useAppStore.getState().logActivity('Cleared', 'System', 'All Datasets Emptied');
   },
-}));
+  };
+});

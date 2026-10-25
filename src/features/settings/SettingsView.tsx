@@ -27,6 +27,8 @@ import { CodeViewer } from '../../components/ui/CodeViewer';
 import { getTranslation } from '../../core/i18n/translations';
 import { useToastStore } from '../../store/useToastStore';
 import { SupportedLanguage } from '../../types';
+import { decryptJson, encryptJson } from '../../core/security/encrypted-envelope.js';
+import { runExportIfUnlocked } from '../../core/security/export-guard.js';
 
 export const SettingsView: React.FC = () => {
   const {
@@ -34,6 +36,7 @@ export const SettingsView: React.FC = () => {
     toggleTheme,
     language,
     setLanguage,
+    masterVaultKey,
   } = useAppStore();
 
   const {
@@ -62,20 +65,33 @@ export const SettingsView: React.FC = () => {
   const [importMode, setImportMode] = useState<'merge' | 'overwrite'>('merge');
   const [pendingImportData, setPendingImportData] = useState<any>(null);
 
-  const handleExportBackup = () => {
+  const handleExportBackup = async () => {
+    if (!masterVaultKey) {
+      showToast('error', 'Unlock the workspace before exporting a backup');
+      return;
+    }
     try {
-      const data = exportBackupData();
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      const dateStr = new Date().toISOString().split('T')[0];
-      a.href = url;
-      a.download = `devdesk-backup-${dateStr}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-      showToast('success', 'Backup JSON exported successfully');
+      const exported = await runExportIfUnlocked(
+        () => encryptJson(exportBackupData(), masterVaultKey),
+        () => {
+          const current = useAppStore.getState();
+          return current.securityStatus === 'unlocked' && current.masterVaultKey === masterVaultKey;
+        },
+        (data: unknown) => {
+          const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          const dateStr = new Date().toISOString().split('T')[0];
+          a.href = url;
+          a.download = `devcockpit-encrypted-backup-${dateStr}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+        },
+      );
+      if (!exported) return;
+      showToast('success', 'Encrypted backup exported successfully');
     } catch {
-      showToast('error', 'Export failed');
+      showToast('error', 'Encrypted backup export failed');
     }
   };
 
@@ -97,14 +113,21 @@ export const SettingsView: React.FC = () => {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const executeImport = () => {
+  const executeImport = async () => {
     if (!pendingImportData) return;
-    const res = importBackupData(pendingImportData, importMode === 'overwrite');
-    if (res.success) {
-      showToast('success', 'Backup imported successfully with Zod validation');
-      setIsImportModalOpen(false);
-    } else {
-      showToast('error', 'Import validation failed', res.error);
+    try {
+      const importPayload = pendingImportData.cipher === 'AES-256-GCM'
+        ? await decryptJson(pendingImportData, masterVaultKey || '')
+        : pendingImportData;
+      const res = await importBackupData(importPayload, importMode === 'overwrite');
+      if (res.success) {
+        showToast('success', 'Backup imported and stored encrypted');
+        setIsImportModalOpen(false);
+      } else {
+        showToast('error', 'Import validation failed', res.error);
+      }
+    } catch (error) {
+      showToast('error', error instanceof Error ? error.message : 'Unable to decrypt backup');
     }
   };
 
